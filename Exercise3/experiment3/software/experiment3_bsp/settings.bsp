@@ -2,9 +2,9 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Nov 15, 2012 8:56:50 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1352987810822</BspGeneratedUnixTimeStamp>
-        <BspGeneratedLocation>/root/Desktop/2013_dev/coe4ds4_lab5_2013/experiment3_dev/software/experiment3_bsp</BspGeneratedLocation>
+        <BspGeneratedTimeStamp>Mar 3, 2019 2:06:52 PM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1551640012153</BspGeneratedUnixTimeStamp>
+        <BspGeneratedLocation>/home/ECE/chiangte/Desktop/Exercise3/experiment3/software/experiment3_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>../../experiment3.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>

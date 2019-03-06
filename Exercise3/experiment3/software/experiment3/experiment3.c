@@ -79,27 +79,38 @@ int main()
                     printf("Loading image data from file \"%s\"\n", PB_irq_data.filename);
 
                     // take out header from PPM
-                    for (i = 0; i < 15; i++) {
+                    for (i = 0; i < 54; i++) {
                         data = sd_card_read(file_handle);
                         if ((data >> 8) != 0) printf("eof reached in header\n");                        
                     }
                     LTC_Switch_Nios_Mode(1);
                     
                     for (i = 0; i < NUM_LINES; i++) {
-                        for (j = 0; j < LINE_LEN; j++) {
-                            IOWR(LED_RED_O_BASE, 0, i*640+j);
-                            data = sd_card_read(file_handle);
-                            if ((data >> 8) != 0) printf("R eof reached: %d, %d\n", i, j);
-                            R_vals[j] = data & 0xFF;
+                    	if((i>=120) && (i<360)){
+							for (j = 0; j < LINE_LEN; j++) {
+								if((j>=160) && (j<480)){
+									IOWR(LED_RED_O_BASE, 0, i*640+j);
+									data = sd_card_read(file_handle);
+									if ((data >> 8) != 0) printf("R eof reached: %d, %d\n", i, j);
+									R_vals[j] = data & 0xFF;
 
-                            data = sd_card_read(file_handle);
-                            if ((data >> 8) != 0) printf("G eof reached: %d, %d\n", i, j);
-                            G_vals[j] = data & 0xFF;
+									data = sd_card_read(file_handle);
+									if ((data >> 8) != 0) printf("G eof reached: %d, %d\n", i, j);
+									G_vals[j] = data & 0xFF;
 
-                            data = sd_card_read(file_handle);
-                            if ((data >> 8) != 0) printf("B eof reached: %d, %d\n", i, j);
-                            B_vals[j] = data & 0xFF;
-                        }                        
+									data = sd_card_read(file_handle);
+									if ((data >> 8) != 0) printf("B eof reached: %d, %d\n", i, j);
+									B_vals[j] = data & 0xFF;
+								}
+							}
+                    	}
+                    	else{
+                    		for (j = 0; j < LINE_LEN; j++) {
+								R_vals[j] = 0;
+								G_vals[j] = 0;
+								B_vals[j] = 0;
+							}
+                    	}
                         LTC_Write_Image_Line(R_vals, G_vals, B_vals);
                     }                                       
                     LTC_Switch_HW_Mode();
@@ -114,43 +125,159 @@ int main()
                 // stop the camera
                 IOWR(NIOS_LCD_CAMERA_COMPONENT_0_CAMERA_BASE, 1, 0x8);
                 
-                sprintf(filename, "file%d.ppm", file_number++);
+                sprintf(filename, "file%d.bmp", file_number++);
                 
                 while ((file_handle = sd_card_fopen(filename, 1)) < 0) {
-                    sprintf(filename, "file%d.ppm", file_number++);                 
+                    sprintf(filename, "file%d.bmp", file_number++);
                 }
-                
                 printf("Saving image to file (%s)...\n", filename);
                 LTC_Switch_Nios_Mode(0);
+                printf("Start of making header\n");
+                // BMP header
+                status = sd_card_write(file_handle, 0x42);// magic number
+                //status = sd_card_write(file_handle, '2');
+                status = sd_card_write(file_handle, 0x4D);
+                //status = sd_card_write(file_handle, 'D'); // magic number end
 
-                // PPM header
-                status = sd_card_write(file_handle, 'P');
-                status = sd_card_write(file_handle, '6');
-                status = sd_card_write(file_handle, '\n');
-                status = sd_card_write(file_handle, '6');
-                status = sd_card_write(file_handle, '4');
-                status = sd_card_write(file_handle, '0');
-                status = sd_card_write(file_handle, ' ');
-                status = sd_card_write(file_handle, '4');
-                status = sd_card_write(file_handle, '8');
-                status = sd_card_write(file_handle, '0');
-                status = sd_card_write(file_handle, '\n');
-                status = sd_card_write(file_handle, '2');
-                status = sd_card_write(file_handle, '5');
-                status = sd_card_write(file_handle, '5');
-                status = sd_card_write(file_handle, '\n');
+                status = sd_card_write(file_handle, 0x36); // size of bmp
+                //status = sd_card_write(file_handle, '6');
+                status = sd_card_write(file_handle, 0x84);
+                //status = sd_card_write(file_handle, '4');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '3');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x00);// start of unused app specific
+                //status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0'); // end of unused app specific
+
+                status = sd_card_write(file_handle, 0x36); // bmp offset
+                //status = sd_card_write(file_handle, '6');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x28); // number of bytes in header
+                //status = sd_card_write(file_handle, '8');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+                //status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x40); // bmp width
+            //    status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x01);
+           //     status = sd_card_write(file_handle, '1');
+                status = sd_card_write(file_handle, 0x00);
+               // status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+              //  status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x10); // height bmp
+              //  status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0xFF);
+              //  status = sd_card_write(file_handle, 'F');
+                status = sd_card_write(file_handle, 0xFF);
+              //  status = sd_card_write(file_handle, 'F');
+                status = sd_card_write(file_handle, 0xFF);
+             //   status = sd_card_write(file_handle, 'F');
+
+                status = sd_card_write(file_handle, 0x01); // num of color plane
+             //   status = sd_card_write(file_handle, '1');
+                status = sd_card_write(file_handle, 0x00);
+             //   status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x18); // num of bits/pix
+             //   status = sd_card_write(file_handle, '8');
+                status = sd_card_write(file_handle, 0x00);
+            //    status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x00); // BI_RGB
+             //   status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+             //   status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x00);
+             //   status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+             //   status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x00); // size of raw bmp
+             //   status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x84);
+             //   status = sd_card_write(file_handle, '4');
+                status = sd_card_write(file_handle, 0x03);
+           //     status = sd_card_write(file_handle, '3');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x13); // horizontal resolution of image
+            //    status = sd_card_write(file_handle, '3');
+                status = sd_card_write(file_handle, 0x0B);
+            //    status = sd_card_write(file_handle, 'B');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+            //    status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x13); // vertical resolution of image
+            //    status = sd_card_write(file_handle, '3');
+                status = sd_card_write(file_handle, 0x0B);
+            //    status = sd_card_write(file_handle, 'B');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+          //      status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x00); // num in palette
+           //     status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+
+                status = sd_card_write(file_handle, 0x00); // mean all colors
+            //    status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+            //    status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+                status = sd_card_write(file_handle, 0x00);
+           //     status = sd_card_write(file_handle, '0');
+                printf("Start filling in bitmap\n");
                 for (i = 0; i < NUM_LINES; i++) {
                     LTC_Read_Image_Line(R_vals, G_vals, B_vals);
-                    for (j = 0; j < LINE_LEN; j++) {
-                        IOWR(LED_RED_O_BASE, 0, i*640+j);
-                        status = sd_card_write(file_handle, R_vals[j]);
-                        if (!status) printf("Write fail: R %d %d\n", i, j);
-                        status = sd_card_write(file_handle, G_vals[j]);
-                        if (!status) printf("Write fail: G %d %d\n", i, j);
-                        status = sd_card_write(file_handle, B_vals[j]);
-                        if (!status) printf("Write fail: B %d %d\n", i, j);
+                    if( (i%2) == 0){
+                    	if(i<16)
+                    		printf("column is:%d\n", i);
+						for (j = 0; j < LINE_LEN; j++) {
+							if( (j%2) == 0){
+								IOWR(LED_RED_O_BASE, 0, i*640+j);
+								status = sd_card_write(file_handle, R_vals[j]);
+								if (!status) printf("Write fail: R %d %d\n", i, j);
+								status = sd_card_write(file_handle, G_vals[j]);
+								if (!status) printf("Write fail: G %d %d\n", i, j);
+								status = sd_card_write(file_handle, B_vals[j]);
+								if (!status) printf("Write fail: B %d %d\n", i, j);
+							}
+						}
                     }
-                }                                       
+                }
+
                 LTC_Switch_HW_Mode();
                 
                 sd_card_fclose(file_handle);

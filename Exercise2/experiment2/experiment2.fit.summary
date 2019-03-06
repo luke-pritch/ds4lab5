@@ -1,14 +1,14 @@
-Fitter Status : Successful - Sat Mar  2 18:54:09 2019
+Fitter Status : Successful - Mon Mar  4 18:31:53 2019
 Quartus II 32-bit Version : 12.0 Build 263 08/02/2012 SP 2 SJ Full Version
 Revision Name : experiment2
 Top-level Entity Name : experiment2
 Family : Cyclone II
 Device : EP2C35F672C6
 Timing Models : Final
-Total logic elements : 1,935 / 33,216 ( 6 % )
-    Total combinational functions : 1,799 / 33,216 ( 5 % )
-    Dedicated logic registers : 1,196 / 33,216 ( 4 % )
-Total registers : 1196
+Total logic elements : 1,986 / 33,216 ( 6 % )
+    Total combinational functions : 1,850 / 33,216 ( 6 % )
+    Dedicated logic registers : 1,230 / 33,216 ( 4 % )
+Total registers : 1230
 Total pins : 89 / 475 ( 19 % )
 Total virtual pins : 0
 Total memory bits : 19,456 / 483,840 ( 4 % )

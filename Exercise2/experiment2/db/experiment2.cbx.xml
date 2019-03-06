@@ -7,6 +7,6 @@
 		<CBX_INST_ENTRY INSTANCE_NAME="|experiment2|experiment2_cpu_0:cpu_0|experiment2_cpu_0_register_bank_b_module:experiment2_cpu_0_register_bank_b|altsyncram:the_altsyncram" CBX_FILE_NAME="altsyncram_ihg1.tdf"/>
 		<CBX_INST_ENTRY INSTANCE_NAME="|experiment2|experiment2_jtag_uart_0:jtag_uart_0|experiment2_jtag_uart_0_scfifo_w:the_experiment2_jtag_uart_0_scfifo_w|scfifo:wfifo" CBX_FILE_NAME="scfifo_1n21.tdf"/>
 		<CBX_INST_ENTRY INSTANCE_NAME="|experiment2|experiment2_jtag_uart_0:jtag_uart_0|experiment2_jtag_uart_0_scfifo_r:the_experiment2_jtag_uart_0_scfifo_r|scfifo:rfifo" CBX_FILE_NAME="scfifo_1n21.tdf"/>
-		<CBX_INST_ENTRY INSTANCE_NAME="|experiment2|my_component_wrapper:my_component_wrapper_0|my_component:my_component_inst|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_li52.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|experiment2|my_component_wrapper:my_component_0|my_component:my_component_inst|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_vv62.tdf"/>
 	</PROJECT>
 </LOG_ROOT>
